@@ -1,6 +1,5 @@
 import fitz
 from ebooklib import epub
-from collections import Counter
 
 import argparse
 
@@ -25,15 +24,14 @@ parser.add_argument('-r', '--pagenumberredex', type=str, default='[0-9]+', metav
 
 args = parser.parse_args()
 
-print(f'{args.file=}')
-print(f'{args.title=}')
-print(f'{args.author=}')
-print(f'{args.cover=}')
-print(f'{args.first=}')
-print(f'{args.image_scale=}')
-print(f'{args.language=}')
-print(f'{args.pagenumberstart=}')
-print(f'{args.pagenumberredex=}')
+print(f'Converting {args.file} to ebook with:')
+print(f'- Title:              {args.title}')
+print(f'- Author:             {args.author}')
+print(f'- First Page:         {args.first}')
+print(f'- Image Scale:        {args.image_scale}')
+print(f'- Language:           {args.language}')
+print(f'- Pagenumber Start:   {args.pagenumberstart}')
+print(f'- Pagenumber Redex:   {args.pagenumberredex}')
 
 UNCERTAINTY_END = 10
 UNCERTAINTY_SIZE = 2
@@ -259,7 +257,7 @@ def get_chapters(pdf, book_title, starting_page, pagenumber_start, pagenumberred
 
     # Find Constants for text size and line width
     text_size, end_pos = get_text_constants(lines)
-    print(f'Found ({text_size=}, {end_pos=})')
+    print(f'Found standart text size of {text_size} and text width of {end_pos}')
 
     # Create Chapters
     paragraphs = lines_to_paragraphs(lines, text_size, end_pos)

@@ -38,7 +38,7 @@ UNCERTAINTY_SIZE = 2
 UNCERTAINTY_LINE_HEIGTH = 2
 
 PAGE_NUM_PATTERN = r'[0-9]+'
-#PAGE_NUM_PATTERN = r'\- [0-9]+ \-'
+#PAGE_NUM_PATTERN = r'\- [0-9]+ \-' # TODO
 
 HTML_CHARS = [('&', '&amp;'), ('<', '&lt;'), ('>', '&gt;')]
 
@@ -85,7 +85,7 @@ def get_spans(book, starting_page=1, pagenumber_start=0):
     spans = []
     img_nr = 0
     for page_nr in range(starting_page-1, book.page_count):
-        blocks = book[page_nr].get_text('dict', flags=11)['blocks']
+        blocks = book[page_nr].get_text('dict')['blocks']
         for block in blocks:
 
             # Handle TEXT Blocks
@@ -246,8 +246,11 @@ def paragraphs_to_chapters(paragraphs, text_size, book_title):
         'title': current_chapter_title,
         'content': current_chapter_content
     })
-    
-    return chapters[1:] # TODO where to start if first p is empty
+
+    # If the first chapter is empty, just discard it.
+    if chapters[0]['content'] == '':
+        return chapters[1:]
+    return chapters
 
 def get_chapters(pdf, book_title, starting_page, pagenumber_start):
     

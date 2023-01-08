@@ -21,6 +21,7 @@ parser.add_argument('-f', '--first', type=int, default=2, metavar='N', help='the
 parser.add_argument('-s', '--image_scale', type=int, default=4, metavar='N', help='the multiplier for image resolution, default=4')
 parser.add_argument('-l', '--language', type=str, default='de', metavar='', help='the specified language, default=de')
 parser.add_argument('-p', '--pagenumberstart', type=int, default=0, metavar='', help='the page where page numbers start (0 if none), default=-1')
+parser.add_argument('-r', '--pagenumberredex', type=str, default='[0-9]+', metavar='', help='the redex to match page numbering against, default=\'[0-9]+\'')
 
 args = parser.parse_args()
 
@@ -32,13 +33,11 @@ print(f'{args.first=}')
 print(f'{args.image_scale=}')
 print(f'{args.language=}')
 print(f'{args.pagenumberstart=}')
+print(f'{args.pagenumberredex=}')
 
 UNCERTAINTY_END = 10
 UNCERTAINTY_SIZE = 2
 UNCERTAINTY_LINE_HEIGTH = 2
-
-PAGE_NUM_PATTERN = r'[0-9]+'
-#PAGE_NUM_PATTERN = r'\- [0-9]+ \-' # TODO
 
 HTML_CHARS = [('&', '&amp;'), ('<', '&lt;'), ('>', '&gt;')]
 
@@ -81,7 +80,7 @@ def save_image(page, bbox, img_nr):
 
 ### Extract Content
 
-def get_spans(book, starting_page=1, pagenumber_start=0):
+def get_spans(book, starting_page=1, pagenumber_start=0, pagenumberredex='[0-9]+'):
     spans = []
     img_nr = 0
     for page_nr in range(starting_page-1, book.page_count):
@@ -92,7 +91,7 @@ def get_spans(book, starting_page=1, pagenumber_start=0):
             if block['type'] == 0:
 
                 # Remove the page number if needed
-                if pagenumber_start > 0 and page_nr >= pagenumber_start-1 and len(block['lines']) == 1 and len(block['lines'][0]['spans']) == 1 and bool(re.match(PAGE_NUM_PATTERN, block['lines'][0]['spans'][0]['text'].strip())):
+                if pagenumber_start > 0 and page_nr >= pagenumber_start-1 and len(block['lines']) == 1 and len(block['lines'][0]['spans']) == 1 and bool(re.match(pagenumberredex, block['lines'][0]['spans'][0]['text'].strip())):
                    continue
 
                 # Flatten all Spans in all Lines
@@ -252,16 +251,15 @@ def paragraphs_to_chapters(paragraphs, text_size, book_title):
         return chapters[1:]
     return chapters
 
-def get_chapters(pdf, book_title, starting_page, pagenumber_start):
+def get_chapters(pdf, book_title, starting_page, pagenumber_start, pagenumberredex):
     
     # Get PDF Content
-    spans = get_spans(pdf, starting_page=starting_page, pagenumber_start=pagenumber_start)
+    spans = get_spans(pdf, starting_page=starting_page, pagenumber_start=pagenumber_start, pagenumberredex=pagenumberredex)
     lines = group_spans_in_lines(spans)
 
     # Find Constants for text size and line width
     text_size, end_pos = get_text_constants(lines)
     print(f'Found ({text_size=}, {end_pos=})')
-    # TODO: reset all '-1' sizes to {text_size}
 
     # Create Chapters
     paragraphs = lines_to_paragraphs(lines, text_size, end_pos)
@@ -293,7 +291,7 @@ def main():
             book.set_cover('cover.jpeg', c.read())
 
     # Content
-    chapters = get_chapters(pdf, args.title, args.first, args.pagenumberstart)
+    chapters = get_chapters(pdf, args.title, args.first, args.pagenumberstart, args.pagenumberredex)
 
     contents = []
     for nr, chapter in enumerate(chapters):

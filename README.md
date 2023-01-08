@@ -35,6 +35,7 @@ Flag | Shortcut | Default | Function
 `--language LANG`         | `-l` | 'de'     | Configure eBook language setting.
 `--pagenumberstart N`     | `-p` | 0        | The page where numbering startes (0 if no numbering).
 `--pagenumberredex REDEX` | `-r` | '[0-9]+' | The REDEX to match the numbering against.
+`--watermark REDEX`       | `-w` | ''       | The REDEX to match watermarks against (`''` if no watermarks).
 
 
 *If you want to use your own image, set this to 0 and paste the image into './tmp/img-cover.jpeg'.

@@ -20,18 +20,18 @@ parser.add_argument('-c', '--cover', type=int, default=1, metavar='N', help='the
 parser.add_argument('-f', '--first', type=int, default=2, metavar='N', help='the first page containing actual text to convert, default=2')
 parser.add_argument('-s', '--image_scale', type=int, default=4, metavar='N', help='the multiplier for image resolution, default=4')
 parser.add_argument('-l', '--language', type=str, default='de', metavar='', help='the specified language, default=de')
-parser.add_argument('-p', '--pagenumbers', type=int, default=0, metavar='', help='the page where page numbers start (0 if none), default=-1')
+parser.add_argument('-p', '--pagenumberstart', type=int, default=0, metavar='', help='the page where page numbers start (0 if none), default=-1')
 
 args = parser.parse_args()
 
-print(args.file)
-print(args.title)
-print(args.author)
-print(args.cover)
-print(args.first)
-print(args.image_scale)
-print(args.language)
-print(args.pagenumbers)
+print(f'{args.file=}')
+print(f'{args.title=}')
+print(f'{args.author=}')
+print(f'{args.cover=}')
+print(f'{args.first=}')
+print(f'{args.image_scale=}')
+print(f'{args.language=}')
+print(f'{args.pagenumberstart=}')
 
 UNCERTAINTY_END = 10
 UNCERTAINTY_SIZE = 2
@@ -249,10 +249,10 @@ def paragraphs_to_chapters(paragraphs, text_size, book_title):
     
     return chapters[1:] # TODO where to start if first p is empty
 
-def get_chapters(pdf, book_title, starting_page):
+def get_chapters(pdf, book_title, starting_page, pagenumber_start):
     
     # Get PDF Content
-    spans = get_spans(pdf, starting_page=starting_page)
+    spans = get_spans(pdf, starting_page=starting_page, pagenumber_start=pagenumber_start)
     lines = group_spans_in_lines(spans)
 
     # Find Constants for text size and line width
@@ -290,7 +290,7 @@ def main():
             book.set_cover('cover.jpeg', c.read())
 
     # Content
-    chapters = get_chapters(pdf, args.title, args.first)
+    chapters = get_chapters(pdf, args.title, args.first, args.pagenumberstart)
 
     contents = []
     for nr, chapter in enumerate(chapters):

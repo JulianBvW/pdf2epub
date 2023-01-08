@@ -16,7 +16,7 @@ parser.add_argument('file', type=str, help='the PDF file you want to convert')
 parser.add_argument('title', type=str, help='the title of the book')
 parser.add_argument('author', type=str, help='the name of the author')
 
-parser.add_argument('-c', '--cover', type=int, default=1, metavar='N', help='the page of the cover image (0 if none), default=1')
+parser.add_argument('-c', '--cover', type=int, default=1, metavar='N', help='the page of the cover image (0 if none -> paste img-cover.jpeg to ./tmp/), default=1')
 parser.add_argument('-f', '--first', type=int, default=2, metavar='N', help='the first page containing actual text to convert, default=2')
 parser.add_argument('-s', '--image_scale', type=int, default=4, metavar='N', help='the multiplier for image resolution, default=4')
 parser.add_argument('-l', '--language', type=str, default='de', metavar='', help='the specified language, default=de')
@@ -286,7 +286,8 @@ def main():
         cover_page = pdf[args.cover-1]
         for block in cover_page.get_text('dict')['blocks']:
             if block['type'] == 1: # Image
-                save_image(cover_page, block['bbox'], 'cover') # TODO nicht immer ganzes bild im block?? example: hp6.pdf
+                save_image(cover_page, block['bbox'], 'cover')
+    if os.path.exists('tmp/img-cover.jpeg'):
         with open('tmp/img-cover.jpeg', 'rb') as c:
             book.set_cover('cover.jpeg', c.read())
 

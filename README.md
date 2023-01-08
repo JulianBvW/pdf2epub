@@ -11,6 +11,8 @@ _CLI tool for converting a PDF to an EPUB file._
 
 ## Usage
 
+Download the `pdf2epub.py` script and run it:
+
 ```bash
 python pdf2epub.py <path/to/file.pdf> <title> <author> [flags]
 ```
